@@ -1,0 +1,86 @@
+#ifndef __CAN_STM32__
+#define __CAN_STM32__
+#include "stm32f4xx.h"
+/***********MTDCCU CAN **************************/
+#define MTDCCU_CAN1_RX_SOURCE			GPIO_PinSource11
+#define MTDCCU_CAN1_TX_SOURCE			GPIO_PinSource12
+#define MTDCCU_CAN1_RX_PIN				GPIO_Pin_11
+#define MTDCCU_CAN1_TX_PIN				GPIO_Pin_12
+#define MTDCCU_CAN1_GPIO_PORT			GPIOA
+#define MTDCCU_CAN1_GPIO_CLK			RCC_AHB1Periph_GPIOA
+
+
+#define MTDCCU_CAN2_RX_SOURCE			GPIO_PinSource5
+#define MTDCCU_CAN2_TX_SOURCE			GPIO_PinSource13
+#define MTDCCU_CAN2_RX_PIN				GPIO_Pin_5
+#define MTDCCU_CAN2_TX_PIN				GPIO_Pin_13
+#define MTDCCU_CAN2_GPIO_PORT			GPIOB
+#define MTDCCU_CAN2_CLK						RCC_APB1Periph_CAN2
+#define MTDCCU_CAN2_GPIO_CLK			RCC_AHB1Periph_GPIOB
+
+/***********CCULED CAN **************************/
+#define CCULED_CAN1_RX_SOURCE			GPIO_PinSource11
+#define CCULED_CAN1_TX_SOURCE			GPIO_PinSource12
+#define CCULED_CAN1_RX_PIN				GPIO_Pin_11
+#define CCULED_CAN1_TX_PIN				GPIO_Pin_12
+#define CCULED_CAN1_GPIO_PORT			GPIOA
+#define CCULED_CAN1_GPIO_CLK			RCC_AHB1Periph_GPIOA
+
+
+#define CCULED_CAN2_RX_SOURCE			GPIO_PinSource5
+#define CCULED_CAN2_TX_SOURCE			GPIO_PinSource13
+#define CCULED_CAN2_RX_PIN				GPIO_Pin_5
+#define CCULED_CAN2_TX_PIN				GPIO_Pin_13
+#define CCULED_CAN2_GPIO_PORT			GPIOB
+#define CCULED_CAN2_CLK						RCC_APB1Periph_CAN2
+#define CCULED_CAN2_GPIO_CLK			RCC_AHB1Periph_GPIOB
+
+/***********MTDMFD CAN **************************/
+#define MTDMFD_CAN1_RX_SOURCE			GPIO_PinSource11
+#define MTDMFD_CAN1_TX_SOURCE			GPIO_PinSource12
+#define MTDMFD_CAN1_RX_PIN				GPIO_Pin_11
+#define MTDMFD_CAN1_TX_PIN				GPIO_Pin_12
+#define MTDMFD_CAN1_GPIO_PORT			GPIOA
+#define MTDMFD_CAN1_GPIO_CLK			RCC_AHB1Periph_GPIOA
+
+
+#define MTDMFD_CAN2_RX_SOURCE			GPIO_PinSource5
+#define MTDMFD_CAN2_TX_SOURCE			GPIO_PinSource6
+#define MTDMFD_CAN2_RX_PIN				GPIO_Pin_5
+#define MTDMFD_CAN2_TX_PIN				GPIO_Pin_6
+#define MTDMFD_CAN2_GPIO_PORT			GPIOB
+#define MTDMFD_CAN2_CLK						RCC_APB1Periph_CAN2
+#define MTDMFD_CAN2_GPIO_CLK			RCC_AHB1Periph_GPIOB
+
+
+#define __CAN1_RX_SOURCE(DEV)	DEV ## _CAN1_RX_SOURCE
+#define __CAN1_TX_SOURCE(DEV)	DEV ## _CAN1_TX_SOURCE
+#define __CAN1_RX_PIN(DEV)	DEV ## _CAN1_RX_PIN
+#define __CAN1_TX_PIN(DEV)	DEV ## _CAN1_TX_PIN
+#define __CAN1_GPIO_PORT(DEV)	DEV ## _CAN1_GPIO_PORT
+#define __CAN1_GPIO_CLK(DEV)	DEV ## _CAN1_GPIO_CLK
+
+#define CAN1_RX_SOURCE(DEV)		__CAN1_RX_SOURCE(DEV)
+#define CAN1_TX_SOURCE(DEV)		__CAN1_TX_SOURCE(DEV)
+#define CAN1_RX_PIN(DEV)			__CAN1_RX_PIN(DEV)
+#define CAN1_TX_PIN(DEV)			__CAN1_TX_PIN(DEV)
+#define CAN1_GPIO_PORT(DEV)		__CAN1_GPIO_PORT(DEV)
+#define CAN1_GPIO_CLK(DEV)		__CAN1_GPIO_CLK(DEV)
+
+#define __CAN2_RX_SOURCE(DEV)	DEV ## _CAN2_RX_SOURCE
+#define __CAN2_TX_SOURCE(DEV)	DEV ## _CAN2_TX_SOURCE
+#define __CAN2_RX_PIN(DEV)	DEV ## _CAN2_RX_PIN
+#define __CAN2_TX_PIN(DEV)	DEV ## _CAN2_TX_PIN
+#define __CAN2_GPIO_PORT(DEV)	DEV ## _CAN2_GPIO_PORT
+#define __CAN2_CLK(DEV)	DEV ## _CAN2_CLK
+#define __CAN2_GPIO_CLK(DEV)	DEV ## _CAN2_GPIO_CLK
+
+#define CAN2_RX_SOURCE(DEV)		__CAN2_RX_SOURCE(DEV)
+#define CAN2_TX_SOURCE(DEV)		__CAN2_TX_SOURCE(DEV)
+#define CAN2_RX_PIN(DEV)			__CAN2_RX_PIN(DEV)
+#define CAN2_TX_PIN(DEV)			__CAN2_TX_PIN(DEV)
+#define CAN2_GPIO_PORT(DEV)		__CAN2_GPIO_PORT(DEV)
+#define CAN2_CLK(DEV)					__CAN2_CLK(DEV)
+#define CAN2_GPIO_CLK(DEV)		__CAN2_GPIO_CLK(DEV)
+extern unsigned char canInit(CAN_TypeDef* CANx,unsigned int bitrate);
+#endif//__CAN_STM32__
