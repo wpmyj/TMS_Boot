@@ -103,15 +103,7 @@ static void parse_UART_Pkg(UNS8* buff,UNS16 count)
 
 	return;
 }
-void test(void)
-{
-	UNS8 tx_buff1[] = "a\xaf" "bcd";
-	UNS8 tx_buff2[] = {0xaf,0xfa,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08};
-	UNS8 tx_buff3[] = "efgh";
-	IAP_SEND_BYTES_TO_PC(tx_buff1,sizeof(tx_buff1));
-	IAP_SEND_BYTES_TO_PC(tx_buff2,sizeof(tx_buff2));
-	IAP_SEND_BYTES_TO_PC(tx_buff3,sizeof(tx_buff3));
-}
+
 //发送到PC回应包
 //	ffdcxxxxcc
 //两字节标志+一字节目标节点 +一字节功能码+四字节iap功能码参数+两字节CRC
@@ -124,7 +116,6 @@ void send_UART_Pkg(UNS8 dst_mNode,UNS8 dts_sNode,UNS8 funcCode,UNS32 cmdVal)
 	tx_buff[3] = funcCode;
 	*(UNS32*)(tx_buff+4) = cmdVal;
 	*(UNS16*)(tx_buff+8) = CRC16(tx_buff,8);
-	//test();
 	IAP_SEND_BYTES_TO_PC(tx_buff,10);
 	
 	

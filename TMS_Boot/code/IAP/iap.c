@@ -48,14 +48,14 @@ void IAP_Init(CO_Data* md,CO_Data* sd,UNS8 ChooseBoard,UNS32 softversion)
 	mmmm bsss yyyy yyyy mmmm mmmm dddd dddd
 	其中m为主设备NODE ID的二进制编码，s为子设备NODE ID的二进制编码, b为BOOT和APP的区分标志，yyyy mmmm dddd为年月日的BCD码
 	**************************************************/
-	if((*md->bDeviceNodeId & 0xf0) != 0x00)//子设备
+	if((ChooseBoard & 0xf0) != 0x00)//子设备
 	{
-		softversion |= (*md->bDeviceNodeId & 0xF0) << 24;
-		softversion |= (*md->bDeviceNodeId & 0x0F) << 24;
+		softversion |= (ChooseBoard & 0xF0) << 24;
+		softversion |= (ChooseBoard & 0x0F) << 24;
 	}
 	else
 	{
-		softversion |= (*md->bDeviceNodeId & 0x0F) << 28;
+		softversion |= (ChooseBoard & 0x0F) << 28;
 	}
 #ifdef __BOOT__
 	softversion |= 0x08000000;
@@ -217,7 +217,7 @@ static UNS32 proceed_IAP_CMD(CO_Data* d, const indextable *pIndexTable, UNS8 bSu
 	s_Delay_stru.funcCode =  pCmdVal[2];
 	s_Delay_stru.len =  		 pCmdVal[3];
 	s_Delay_stru.pCmdVal = 	 pCmdVal + 4;
-	//DEBUG_PRINT("--->  cmd value : %lx \r\n",*(UNS32*)s_Delay_stru.pCmdVal);
+	//DEBUG_PRINT("--->  cmd func %x value : %lx \r\n",s_Delay_stru.funcCode,*(UNS32*)s_Delay_stru.pCmdVal);
 	if((IS_MAIN_DEVICE() && (s_Delay_stru.dst_mNode == *IAP_info.mCo_data->bDeviceNodeId) && (s_Delay_stru.dst_sNode == 0)) 
 		|| ((MAIN_DEVICE_NODE_ID() == s_Delay_stru.dst_mNode )&& (s_Delay_stru.dst_sNode == *IAP_info.mCo_data->bDeviceNodeId)))//此设备为目标设备
 	{
@@ -242,7 +242,7 @@ static UNS32 proceed_IAP_CMD_reponse(CO_Data* d, const indextable *pIndexTable, 
 	s_Delay_stru.len =  		 pCmdVal[3];
 	s_Delay_stru.pCmdVal = 	 pCmdVal + 4;
 
-	//DEBUG_PRINT("<---  reponse value : %lx \r\n",*(UNS32*)s_Delay_stru.pCmdVal);
+	//DEBUG_PRINT("<---  reponse func %x value : %lx \r\n",s_Delay_stru.funcCode,*(UNS32*)s_Delay_stru.pCmdVal);
 	if((IS_MAIN_DEVICE() && s_Delay_stru.src_mNode == *IAP_info.mCo_data->bDeviceNodeId && s_Delay_stru.src_sNode == 0) 
 		|| (MAIN_DEVICE_NODE_ID() == s_Delay_stru.src_mNode && s_Delay_stru.src_sNode == *IAP_info.mCo_data->bDeviceNodeId))//此设备为目标设备
 	{

@@ -163,11 +163,6 @@
       <TargetDriverDllRegistry>
         <SetRegEntry>
           <Number>0</Number>
-          <Key>DLGUARM</Key>
-          <Name>/</Name>
-        </SetRegEntry>
-        <SetRegEntry>
-          <Number>0</Number>
           <Key>ARMRTXEVENTFLAGS</Key>
           <Name>-L70 -Z18 -C0 -M0 -T1</Name>
         </SetRegEntry>
@@ -198,14 +193,14 @@
           <Type>0</Type>
           <LineNumber>51</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134223400</Address>
+          <Address>134223348</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>E:\鍏€氱嚎\can鍗囩骇\浠ｇ爜\TMS_Boot\TMS_Boot161208\code\IAP\IAP_UART.c</Filename>
+          <Filename>E:\鍏€氱嚎\can鍗囩骇\浠ｇ爜\git\TMS_Boot.git\TMS_Boot\code\IAP\IAP_UART.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\TMS_Boot\code/IAP/IAP_UART.c\51</Expression>
         </Bp>
@@ -214,14 +209,14 @@
           <Type>0</Type>
           <LineNumber>72</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134223496</Address>
+          <Address>134223444</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>E:\鍏€氱嚎\can鍗囩骇\浠ｇ爜\TMS_Boot\TMS_Boot161208\code\IAP\IAP_UART.c</Filename>
+          <Filename>E:\鍏€氱嚎\can鍗囩骇\浠ｇ爜\git\TMS_Boot.git\TMS_Boot\code\IAP\IAP_UART.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\TMS_Boot\code/IAP/IAP_UART.c\72</Expression>
         </Bp>
@@ -230,23 +225,87 @@
           <Type>0</Type>
           <LineNumber>85</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134251334</Address>
+          <Address>134251402</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>E:\鍏€氱嚎\can鍗囩骇\浠ｇ爜\TMS_Boot\TMS_Boot161208\code\IAP\IAP_Processor.c</Filename>
+          <Filename>E:\鍏€氱嚎\can鍗囩骇\浠ｇ爜\git\TMS_Boot.git\TMS_Boot\code\IAP\IAP_Processor.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\TMS_Boot\code/IAP/IAP_Processor.c\85</Expression>
+        </Bp>
+        <Bp>
+          <Number>3</Number>
+          <Type>0</Type>
+          <LineNumber>74</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134237694</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>E:\鍏€氱嚎\can鍗囩骇\浠ｇ爜\git\TMS_Boot.git\TMS_Boot\code\Source\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\TMS_Boot\code/Source/main.c\74</Expression>
+        </Bp>
+        <Bp>
+          <Number>4</Number>
+          <Type>0</Type>
+          <LineNumber>49</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134224064</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>E:\鍏€氱嚎\can鍗囩骇\浠ｇ爜\git\TMS_Boot.git\TMS_Boot\code\CanFestival-3-8bfe0ac00cdb\drivers\stm32\MTD_CCU_CAN3_MCP2515.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\TMS_Boot\code/CanFestival-3-8bfe0ac00cdb/drivers/stm32/MTD_CCU_CAN3_MCP2515.c\49</Expression>
+        </Bp>
+        <Bp>
+          <Number>5</Number>
+          <Type>0</Type>
+          <LineNumber>224</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134250816</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>E:\鍏€氱嚎\can鍗囩骇\浠ｇ爜\git\TMS_Boot.git\TMS_Boot\code\IAP\iap.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\TMS_Boot\code/IAP/iap.c\224</Expression>
+        </Bp>
+        <Bp>
+          <Number>6</Number>
+          <Type>0</Type>
+          <LineNumber>150</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134222636</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>E:\鍏€氱嚎\can鍗囩骇\浠ｇ爜\git\TMS_Boot.git\TMS_Boot\code\IAP\iap.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\TMS_Boot\code/IAP/iap.c\150</Expression>
         </Bp>
       </Breakpoint>
       <MemoryWindow1>
         <Mm>
           <WinNumber>1</WinNumber>
           <SubType>0</SubType>
-          <ItemText>0x20001ef8</ItemText>
+          <ItemText>0x08010000</ItemText>
           <AccSizeX>0</AccSizeX>
         </Mm>
       </MemoryWindow1>

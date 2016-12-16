@@ -9,13 +9,15 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
 using System.Diagnostics;
+using System.Xml;
 namespace TMS_CAN_UPDATE
 {
     public partial class Form1 : Form
     {
+        string xmlFile = "../../TMSDeviceDeploy.xml";
         private enum IAP_CMD
         {
-            GET_ONLINE_TABLE = 0,
+            GET_SOFTWARE_VERSION = 0,
             PROGRAM_READY,
             PROGRAMING,
             REBOOT,
@@ -36,13 +38,14 @@ namespace TMS_CAN_UPDATE
                 MessageBox.Show("UART 响应 CRC 校验错误！", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
             }
         }
+        private Dictionary<string,string>[,] devInfo = new Dictionary<string,string>[15,5];
         private void processedReponse(int dts_mNode, int dts_sNode, int funcCode, UInt32 cmdVal)
         {
             if (funcCode == (int)IAP_CMD.PROGRAM_READY )
             {
                 if(cmdVal == 1)//准备就绪，开始传输bin
                 {
-                    sendFile(pathTextBox.Text);
+                    sendFile(dts_mNode, dts_sNode, pathTextBox.Text);
                 }        
             }
             else if (funcCode == (int)IAP_CMD.PROGRAMING )
@@ -55,11 +58,15 @@ namespace TMS_CAN_UPDATE
                     progressBar1.Value = 0;
                     byte[] val = { 0, 0, 0, 0 };
                     SendCmd(dts_mNode, dts_sNode, (int)IAP_CMD.REBOOT, val);
+                    if (checkBox1.Checked == false)
+                    {
+                        updateBtn_Click(null,null);
+                    }
                     //MessageBox.Show("传输已完成 , 耗时:" + ((float)(watch.ElapsedMilliseconds)/1000).ToString(), "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
                 }
                 else if(cmdVal == 1)//写入成功，请求下一块
                 {
-                    sendFile(pathTextBox.Text);
+                    sendFile(dts_mNode, dts_sNode, pathTextBox.Text);
                 }
                 else{//IAP过程异常
                     if (cmdVal == 2)
@@ -82,7 +89,84 @@ namespace TMS_CAN_UPDATE
                     FileBlkOffset = 0;
                 }
             }
+            else if (funcCode == (int)IAP_CMD.GET_SOFTWARE_VERSION)
+            {
+                uint m_id = cmdVal >> 28;
+                uint s_id = (cmdVal >> 24) & 0x07;
+                string app = (cmdVal & 0x08000000) == 0?"APP":"BOOT";
+                string ver = (cmdVal & 0x00ffffff).ToString("X");
+                devInfo[m_id,s_id] = new Dictionary<string,string>();
+                devInfo[m_id,s_id].Add("app",app);
+                devInfo[m_id,s_id].Add("ver",ver);
+                treeView1.Nodes.Clear();
+                for (int i = 0; i < devInfo.GetLength(0); i++)
+                {
+                    if(devInfo[i,0] != null)
+                    {
+                        string devName = getDevNameFromXml(i, 0);
+                        devName = devName == null ? "----" : devName;
+                        treeView1.Nodes.Add((i<<4).ToString(),i.ToString()+" 0 "+devName+" " +devInfo[i,0]["app"]+" "+devInfo[i,0]["ver"]);
+                    }
+                    for (int j = 1; j < devInfo.GetLength(1); j++)
+                    {
+                        if(devInfo[i,j] != null)
+                        {
+                            string devName = getDevNameFromXml(i, j);
+                            devName = devName == null ? "----" : devName;
+                            treeView1.Nodes[i].Nodes.Add(((i << 4)+j).ToString(), i.ToString() + " " + j.ToString() + " " + devName + " " + devInfo[i,j]["app"] + " " + devInfo[i,j]["ver"]);                  
+                        }
+                    }
+                }
+            }
 
+        }
+        private string getDevNameFromXml(int m_id,int s_id)
+        {
+            string devName = null;
+            XmlDocument xmldoc = new XmlDocument();
+            try
+            {
+                xmldoc.Load(xmlFile);
+                XmlElement root = xmldoc.DocumentElement;
+                XmlNodeList nodeList_m = root.ChildNodes;
+                for (int i = 0; i < nodeList_m.Count; i++)
+                {
+                    if (m_id.ToString() == nodeList_m[i].Attributes["id"].Value)
+                    {
+                        if (s_id == 0)
+                        {
+                            devName = nodeList_m[i].Attributes["name"].Value;
+                            break;
+                        }
+                        else
+                        {
+                            XmlNodeList nodeList_s = nodeList_m[i].ChildNodes;
+                            for (int j = 0; j < nodeList_s.Count; j++)
+                            {
+                                if (s_id.ToString() == nodeList_s[j].Attributes["id"].Value)
+                                {
+                                    devName = nodeList_s[j].Attributes["id"].Value;
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                MessageBox.Show("找不到配置文件\"TMSDeviceDeploy.xml\"", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.ToString(), "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+            }
+            finally
+            {
+                xmldoc.Clone();
+            }
+            return devName;
         }
         Stopwatch watch = new Stopwatch();
         const int FILE_BLK_MAX_SIZE = 244;//必须4字节对齐
@@ -102,7 +186,7 @@ namespace TMS_CAN_UPDATE
          * 文件块=cnt+offset+文件段内容<=248
          * 所以文件分片最大248
          **********************************************************/
-        private void sendFile(String name)
+        private void sendFile(int m_id,int s_id,String name)
         {
             UInt16 crc = 0;
             if (FileBlkCnt == 0)
@@ -162,7 +246,7 @@ namespace TMS_CAN_UPDATE
             {
                 MessageBox.Show(ex.ToString(), "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
             }
-            SendCmd(int.Parse(mIndexTextBox.Text), int.Parse(sIndexTextBox.Text), (int)IAP_CMD.PROGRAMING, buff);
+            SendCmd(m_id, s_id, (int)IAP_CMD.PROGRAMING, buff);
             //System.Console.WriteLine("send FileBlkOffset : " + FileBlkOffset);
             if (FileBlkOffset == FileBlkCnt)
             {
@@ -433,6 +517,7 @@ namespace TMS_CAN_UPDATE
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            this.treeView1.CheckBoxes = true;
             serial.BaudRate = 115200;
             String[] strs = SerialPort.GetPortNames();
             foreach (String str in strs)
@@ -443,8 +528,9 @@ namespace TMS_CAN_UPDATE
             {
                 comboBox1.SelectedIndex = 0;
             }
-            closeBtn.Enabled = false;
             serial.DataReceived += serial_DataReceived;
+            if(serial.IsOpen)
+                button3_Click(null,null);
         }
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -452,9 +538,14 @@ namespace TMS_CAN_UPDATE
             
 
         }
-
         private void button1_Click(object sender, EventArgs e)
         {
+            if (serialSwitchBtn.Text == "关闭")
+            {
+                serial.Close();
+                serialSwitchBtn.Text = "打开";
+                return;
+            }
             if (comboBox1.Text == "")
             {
                 MessageBox.Show("请选择串口!", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
@@ -466,27 +557,53 @@ namespace TMS_CAN_UPDATE
             }
             catch(Exception ){
                 MessageBox.Show("串口打开失败，请确认串口是否存在！", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                return;
             }
-            openBtn.Enabled = false;
-            closeBtn.Enabled = true;
+            serialSwitchBtn.Enabled = false;
+            serialSwitchBtn.Text = "打开"; 
         }
 
 
 
-        private void button2_Click(object sender, EventArgs e)
-        {
-            serial.Close();
-            closeBtn.Enabled = false;
-            openBtn.Enabled = true;
-        }
 
         private void updateBtn_Click(object sender, EventArgs e)
         {
             FileBlkCnt = 0;
             //sendFile(pathTextBox.Text);
             Byte[] cmdVal = {0,0,0,0};
-            SendCmd(int.Parse(mIndexTextBox.Text), int.Parse(sIndexTextBox.Text), (int)IAP_CMD.PROGRAM_READY, cmdVal);
-
+            if (checkBox1.Checked == true)
+                SendCmd(int.Parse(mIndexTextBox.Text), int.Parse(sIndexTextBox.Text), (int)IAP_CMD.PROGRAM_READY, cmdVal);
+            else
+            {
+                for (int i = 0; i < treeView1.Nodes.Count; i++)
+                {
+                    if (treeView1.Nodes[i].Checked == true)
+                    {
+                        string[] strs = treeView1.Nodes[i].Text.Split(' ');
+                        int m_id = int.Parse(strs[0]);
+                        int s_id = int.Parse(strs[1]);
+                        SendCmd(m_id, s_id, (int)IAP_CMD.PROGRAM_READY, cmdVal);
+                        treeView1.Nodes[i].Checked = false;
+                        break;
+                    }
+                    else
+                    {
+                        for (int j = 0; j < treeView1.Nodes[i].Nodes.Count; j++)
+                        {
+                            if (treeView1.Nodes[i].Nodes[j].Checked == true)
+                            {
+                                string[] strs = treeView1.Nodes[i].Nodes[j].Text.Split(' ');
+                                int m_id = int.Parse(strs[0]);
+                                int s_id = int.Parse(strs[1]);
+                                SendCmd(m_id, s_id, (int)IAP_CMD.PROGRAM_READY, cmdVal);
+                                treeView1.Nodes[i].Nodes[j].Checked = true;
+                                i = treeView1.Nodes.Count;//跳出外层
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         }
         
         
@@ -585,6 +702,42 @@ namespace TMS_CAN_UPDATE
         private void button1_Click_2(object sender, EventArgs e)
         {
             textBox1.Clear();
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked == true)
+            {
+                groupBox1.Enabled = true;
+            }
+            else
+            {
+                groupBox1.Enabled = false;
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            new Form2().ShowDialog(this);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            for(int i =0;i<devInfo.GetLength(0);i++)
+            {
+                for(int j = 0;j<devInfo.GetLength(1);j++)
+                {
+                    devInfo[i, j] = null;
+                }
+            }
+            treeView1.Nodes.Clear();
+            Byte[] cmdVal = { 0, 0, 0, 0 };
+            SendCmd(int.Parse(mIndexTextBox.Text), int.Parse(sIndexTextBox.Text), (int)IAP_CMD.GET_SOFTWARE_VERSION, cmdVal);
         }
     }
 }

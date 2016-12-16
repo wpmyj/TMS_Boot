@@ -333,7 +333,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_STDPERIPH_DRIVER,STM32F40_41xxx,__BOOT__,Z_DEVICE=MTDCCU,DEBUG_ERR_CONSOLE_ON1,DEBUG_WAR_CONSOLE_ON1</Define>
+              <Define>USE_STDPERIPH_DRIVER,STM32F40_41xxx,__BOOT__,Z_DEVICE=MTDMFD,DEBUG_ERR_CONSOLE_ON1,DEBUG_WAR_CONSOLE_ON1</Define>
               <Undefine></Undefine>
               <IncludePath>.\code\STM32F4xx_DSP_StdPeriph_Lib_V1.7.1\STM32F4xx_StdPeriph_Driver\inc;.\code\STM32F4xx_DSP_StdPeriph_Lib_V1.7.1\CMSIS\Include;.\code\STM32F4xx_DSP_StdPeriph_Lib_V1.7.1\CMSIS\Device\ST\STM32F4xx\Include;.\code\Source;.\code\STM32Config;.\code\UserLib;.\code\CanFestival-3-8bfe0ac00cdb\include;.\code\CanFestival-3-8bfe0ac00cdb\drivers\stm32;.\code\CanFestival-3-8bfe0ac00cdb\src;.\code\CanFestival-3-8bfe0ac00cdb\include\stm32;.\code\CanFestival-3-8bfe0ac00cdb\examples\stm32\common;.\code\CanFestival-3-8bfe0ac00cdb\ObjDict;.\code\IAP</IncludePath>
             </VariousControls>
