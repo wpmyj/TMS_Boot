@@ -1,6 +1,6 @@
 ﻿namespace TMS_CAN_UPDATE
 {
-    partial class Form3
+    partial class AddDevWin
     {
         /// <summary>
         /// Required designer variable.
@@ -88,7 +88,7 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // Form3
+            // AddDevWin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -99,8 +99,8 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label1);
-            this.Name = "Form3";
-            this.Text = "Form3";
+            this.Name = "AddDevWin";
+            this.Text = "添加设备";
             this.ResumeLayout(false);
             this.PerformLayout();
 

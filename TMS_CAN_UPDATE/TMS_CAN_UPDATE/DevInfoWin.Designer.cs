@@ -1,6 +1,6 @@
 ﻿namespace TMS_CAN_UPDATE
 {
-    partial class Form2
+    partial class DevInfoWin
     {
         /// <summary>
         /// Required designer variable.

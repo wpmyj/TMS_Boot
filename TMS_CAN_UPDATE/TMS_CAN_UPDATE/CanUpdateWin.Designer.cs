@@ -1,6 +1,6 @@
 ﻿namespace TMS_CAN_UPDATE
 {
-    partial class Form1
+    partial class CanUpdateWin
     {
         /// <summary>
         /// 必需的设计器变量。
@@ -37,14 +37,14 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.pathTextBox = new System.Windows.Forms.TextBox();
-            this.updateBtn1 = new System.Windows.Forms.Button();
+            this.browseBtn = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
+            this.DevInfoConfBtn = new System.Windows.Forms.Button();
+            this.UpdateDevBtn = new System.Windows.Forms.Button();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -56,7 +56,6 @@
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(80, 20);
             this.comboBox1.TabIndex = 0;
-            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // serialSwitchBtn
             // 
@@ -66,7 +65,7 @@
             this.serialSwitchBtn.TabIndex = 1;
             this.serialSwitchBtn.Text = "打开";
             this.serialSwitchBtn.UseVisualStyleBackColor = true;
-            this.serialSwitchBtn.Click += new System.EventHandler(this.button1_Click);
+            this.serialSwitchBtn.Click += new System.EventHandler(this.serialSwitchBtn_Click);
             // 
             // mIndexTextBox
             // 
@@ -129,21 +128,22 @@
             this.pathTextBox.TabIndex = 9;
             this.pathTextBox.Text = "G:\\宝洪辰工作\\八通线\\can升级\\代码\\CCUProject\\Project\\CCU.bin";
             // 
-            // updateBtn1
+            // browseBtn
             // 
-            this.updateBtn1.Location = new System.Drawing.Point(305, 400);
-            this.updateBtn1.Name = "updateBtn1";
-            this.updateBtn1.Size = new System.Drawing.Size(75, 23);
-            this.updateBtn1.TabIndex = 10;
-            this.updateBtn1.Text = "浏览";
-            this.updateBtn1.UseVisualStyleBackColor = true;
-            this.updateBtn1.Click += new System.EventHandler(this.updateBtn1_Click);
+            this.browseBtn.Location = new System.Drawing.Point(305, 400);
+            this.browseBtn.Name = "browseBtn";
+            this.browseBtn.Size = new System.Drawing.Size(75, 23);
+            this.browseBtn.TabIndex = 10;
+            this.browseBtn.Text = "浏览";
+            this.browseBtn.UseVisualStyleBackColor = true;
+            this.browseBtn.Click += new System.EventHandler(this.browseBtn_Click);
             // 
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(53, 492);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
+            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textBox1.Size = new System.Drawing.Size(452, 136);
             this.textBox1.TabIndex = 11;
             // 
@@ -181,7 +181,7 @@
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(305, 44);
+            this.checkBox1.Location = new System.Drawing.Point(305, 53);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(72, 16);
             this.checkBox1.TabIndex = 15;
@@ -189,25 +189,25 @@
             this.checkBox1.UseVisualStyleBackColor = true;
             this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
-            // button2
+            // DevInfoConfBtn
             // 
-            this.button2.Location = new System.Drawing.Point(305, 464);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(94, 23);
-            this.button2.TabIndex = 17;
-            this.button2.Text = "设备信息配置";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.DevInfoConfBtn.Location = new System.Drawing.Point(305, 464);
+            this.DevInfoConfBtn.Name = "DevInfoConfBtn";
+            this.DevInfoConfBtn.Size = new System.Drawing.Size(94, 23);
+            this.DevInfoConfBtn.TabIndex = 17;
+            this.DevInfoConfBtn.Text = "设备信息配置";
+            this.DevInfoConfBtn.UseVisualStyleBackColor = true;
+            this.DevInfoConfBtn.Click += new System.EventHandler(this.DevInfoConfBtn_Click);
             // 
-            // button3
+            // UpdateDevBtn
             // 
-            this.button3.Location = new System.Drawing.Point(305, 198);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(104, 23);
-            this.button3.TabIndex = 18;
-            this.button3.Text = "刷新设备列表";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.UpdateDevBtn.Location = new System.Drawing.Point(305, 198);
+            this.UpdateDevBtn.Name = "UpdateDevBtn";
+            this.UpdateDevBtn.Size = new System.Drawing.Size(104, 23);
+            this.UpdateDevBtn.TabIndex = 18;
+            this.UpdateDevBtn.Text = "刷新设备列表";
+            this.UpdateDevBtn.UseVisualStyleBackColor = true;
+            this.UpdateDevBtn.Click += new System.EventHandler(this.UpdateDevBtn_Click);
             // 
             // treeView1
             // 
@@ -216,27 +216,27 @@
             this.treeView1.Size = new System.Drawing.Size(246, 408);
             this.treeView1.TabIndex = 19;
             // 
-            // Form1
+            // CanUpdateWin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(550, 640);
             this.Controls.Add(this.treeView1);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.UpdateDevBtn);
+            this.Controls.Add(this.DevInfoConfBtn);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.updateBtn1);
+            this.Controls.Add(this.browseBtn);
             this.Controls.Add(this.pathTextBox);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.updateBtn);
             this.Controls.Add(this.serialSwitchBtn);
             this.Controls.Add(this.comboBox1);
-            this.Name = "Form1";
-            this.Text = "-";
+            this.Name = "CanUpdateWin";
+            this.Text = "CAN升级";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -256,14 +256,14 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox pathTextBox;
-        private System.Windows.Forms.Button updateBtn1;
+        private System.Windows.Forms.Button browseBtn;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button DevInfoConfBtn;
+        private System.Windows.Forms.Button UpdateDevBtn;
         private System.Windows.Forms.TreeView treeView1;
     }
 }

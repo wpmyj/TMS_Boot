@@ -11,9 +11,9 @@ using System.Xml;
 
 namespace TMS_CAN_UPDATE
 {
-    public partial class Form2 : Form
+    public partial class DevInfoWin : Form
     {
-        public Form2()
+        public DevInfoWin()
         {
             InitializeComponent();
         }
@@ -103,6 +103,7 @@ namespace TMS_CAN_UPDATE
             finally
             {
                 xmlDoc.Clone();
+                Close();
             }    
                 
         }    
@@ -119,7 +120,7 @@ namespace TMS_CAN_UPDATE
                 MessageBox.Show("请选择一个主设备", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
                 return;
             }    
-            new Form3().ShowDialog(this);
+            new AddDevWin().ShowDialog(this);
             if (paraTo != null)
             {
 
@@ -139,7 +140,7 @@ namespace TMS_CAN_UPDATE
                 return;
             }
             paraTo = treeView1.SelectedNode.Name;
-            new Form3().ShowDialog(this);
+            new AddDevWin().ShowDialog(this);
             if (paraTo != null)
             {
                 int key = int.Parse(treeView1.SelectedNode.Name) | int.Parse(paraTo.Split(' ')[0]);

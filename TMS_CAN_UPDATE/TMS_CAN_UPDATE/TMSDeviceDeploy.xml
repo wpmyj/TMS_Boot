@@ -1,13 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <main id="3" name="MTDCPU">
-    <sub id="2" name="MTDMFD" />
+  <main id="1" name="MTDCCU">
     <sub id="1" name="CCULED" />
-  </main>
-  <main id="2" name="MTDCCU">
-    <sub id="1" name="MTDCCU" />
-  </main>
-  <main id="5" name="TEST">
-    <sub id="1" name="SUBTEST" />
   </main>
 </root>

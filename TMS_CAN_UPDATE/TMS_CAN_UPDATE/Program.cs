@@ -16,7 +16,7 @@ namespace TMS_CAN_UPDATE
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Form1 f = new Form1();
+            CanUpdateWin f = new CanUpdateWin();
             Application.Run(f);
         }
     }

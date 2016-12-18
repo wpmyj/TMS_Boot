@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace TMS_CAN_UPDATE
 {
-    public partial class Form3 : Form
+    public partial class AddDevWin : Form
     {
-        public Form3()
+        public AddDevWin()
         {
             InitializeComponent();
         }
@@ -30,7 +30,7 @@ namespace TMS_CAN_UPDATE
                 MessageBox.Show("请输入正确的设备名称。", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
                 return;
             }
-            ((Form2)Owner).paraTo = textBox1.Text + " " + textBox2.Text;
+            ((DevInfoWin)Owner).paraTo = textBox1.Text + " " + textBox2.Text;
             Close();
             
         }
