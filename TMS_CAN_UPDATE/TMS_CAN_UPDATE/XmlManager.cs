@@ -10,6 +10,94 @@ namespace TMS_CAN_UPDATE
     class XmlManager
     {
         static String xmlFile = "../../TMSDeviceDeploy.xml";
+
+        public static void SaveDevOnlineToXml(Dictionary<string,object>[,] devInfoTable)
+        {
+            XmlDocument xmldoc = new XmlDocument();
+            try
+            {
+                xmldoc.Load(xmlFile);
+                XmlElement root = xmldoc.DocumentElement;
+                XmlNodeList nodeList_m = root.ChildNodes;
+                for (int i = 0; i < nodeList_m.Count; i++)
+                {
+                    int m_id = int.Parse(nodeList_m[i].Attributes["id"].Value);
+                    if (devInfoTable[m_id, 0] !=null)
+                    {
+                        nodeList_m[i].Attributes["online"].Value = "y";
+                        nodeList_m[i].Attributes["app"].Value = devInfoTable[m_id, 0]["app"].ToString();
+                        nodeList_m[i].Attributes["ver"].Value = devInfoTable[m_id, 0]["ver"].ToString();
+                    }
+                    else
+                        nodeList_m[i].Attributes["online"].Value = "n";
+                    
+                    XmlNodeList nodeList_s = nodeList_m[i].ChildNodes;
+                    for (int j = 0; j < nodeList_s.Count; j++)
+                    {
+                        int s_id = int.Parse(nodeList_s[j].Attributes["id"].Value);
+                        if (devInfoTable[m_id, s_id] != null)
+                        {
+                            nodeList_s[j].Attributes["online"].Value = "y";
+                            nodeList_s[j].Attributes["app"].Value = devInfoTable[m_id, s_id]["app"].ToString();
+                            nodeList_s[j].Attributes["ver"].Value = devInfoTable[m_id, s_id]["ver"].ToString();
+                        }
+                        else
+                            nodeList_s[j].Attributes["online"].Value = "n";
+                    }
+                }
+                xmldoc.Save(xmlFile);
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.ToString(), "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+            }
+            finally
+            {
+                xmldoc.Clone();
+            }
+        }
+        public static void LoadDevOnlineFromXml(Dictionary<string, object>[,] devInfoTable)
+        {
+            XmlDocument xmldoc = new XmlDocument();
+            try
+            {
+                xmldoc.Load(xmlFile);
+                XmlElement root = xmldoc.DocumentElement;
+                XmlNodeList nodeList_m = root.ChildNodes;
+                for (int i = 0; i < nodeList_m.Count; i++)
+                {
+                    int m_id = int.Parse(nodeList_m[i].Attributes["id"].Value);
+                    if (nodeList_m[i].Attributes["online"].Value == "y")
+                    {
+                        Dictionary<string, object> dir = new Dictionary<string, object>();
+                        dir.Add("app", nodeList_m[i].Attributes["app"].Value);
+                        dir.Add("ver", nodeList_m[i].Attributes["ver"].Value);
+                        
+                        devInfoTable[m_id, 0] = dir;
+                    }
+                    XmlNodeList nodeList_s = nodeList_m[i].ChildNodes;
+                    for (int j = 0; j < nodeList_s.Count; j++)
+                    {
+                        if (nodeList_s[j].Attributes["online"].Value == "y")
+                        {
+                            Dictionary<string, object> dir = new Dictionary<string, object>();
+                            dir.Add("app", nodeList_s[j].Attributes["app"].Value);
+                            dir.Add("ver", nodeList_s[j].Attributes["ver"].Value);
+                            int s_id = int.Parse(nodeList_s[j].Attributes["id"].Value);
+                            devInfoTable[m_id, s_id] = dir;
+                        }
+                    }
+                }
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.ToString(), "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+            }
+            finally
+            {
+                xmldoc.Clone();
+            }
+        }
         public static string GetDevNameFromXml(int m_id, int s_id)
         {
             string devName = null;
@@ -35,7 +123,7 @@ namespace TMS_CAN_UPDATE
                             {
                                 if (s_id.ToString() == nodeList_s[j].Attributes["id"].Value)
                                 {
-                                    devName = nodeList_s[j].Attributes["id"].Value;
+                                    devName = nodeList_s[j].Attributes["name"].Value;
                                     break;
                                 }
                             }

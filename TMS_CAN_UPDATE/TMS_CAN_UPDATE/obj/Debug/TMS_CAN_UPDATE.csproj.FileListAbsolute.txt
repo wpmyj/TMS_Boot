@@ -1,0 +1,11 @@
+E:\八通线\can升级\代码\git\TMS_Boot.git\TMS_CAN_UPDATE\TMS_CAN_UPDATE\bin\Debug\TMS_CAN_UPDATE.exe.config
+E:\八通线\can升级\代码\git\TMS_Boot.git\TMS_CAN_UPDATE\TMS_CAN_UPDATE\bin\Debug\TMS_CAN_UPDATE.exe
+E:\八通线\can升级\代码\git\TMS_Boot.git\TMS_CAN_UPDATE\TMS_CAN_UPDATE\bin\Debug\TMS_CAN_UPDATE.pdb
+E:\八通线\can升级\代码\git\TMS_Boot.git\TMS_CAN_UPDATE\TMS_CAN_UPDATE\obj\Debug\TMS_CAN_UPDATE.csprojResolveAssemblyReference.cache
+E:\八通线\can升级\代码\git\TMS_Boot.git\TMS_CAN_UPDATE\TMS_CAN_UPDATE\obj\Debug\TMS_CAN_UPDATE.CanUpdateWin.resources
+E:\八通线\can升级\代码\git\TMS_Boot.git\TMS_CAN_UPDATE\TMS_CAN_UPDATE\obj\Debug\TMS_CAN_UPDATE.DevInfoWin.resources
+E:\八通线\can升级\代码\git\TMS_Boot.git\TMS_CAN_UPDATE\TMS_CAN_UPDATE\obj\Debug\TMS_CAN_UPDATE.AddDevWin.resources
+E:\八通线\can升级\代码\git\TMS_Boot.git\TMS_CAN_UPDATE\TMS_CAN_UPDATE\obj\Debug\TMS_CAN_UPDATE.Properties.Resources.resources
+E:\八通线\can升级\代码\git\TMS_Boot.git\TMS_CAN_UPDATE\TMS_CAN_UPDATE\obj\Debug\TMS_CAN_UPDATE.csproj.GenerateResource.Cache
+E:\八通线\can升级\代码\git\TMS_Boot.git\TMS_CAN_UPDATE\TMS_CAN_UPDATE\obj\Debug\TMS_CAN_UPDATE.exe
+E:\八通线\can升级\代码\git\TMS_Boot.git\TMS_CAN_UPDATE\TMS_CAN_UPDATE\obj\Debug\TMS_CAN_UPDATE.pdb

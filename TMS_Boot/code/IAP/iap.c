@@ -69,9 +69,6 @@ void IAP_Init(CO_Data* md,CO_Data* sd,UNS8 ChooseBoard,UNS32 softversion)
 	{
 		RegisterSetODentryCallBack(sd, IAP_MAIN_INDEX, IAP_CMD_REPONSE_SUB_INDEX, proceed_IAP_CMD_reponse);
 	}
-	
-
-
 }
 
 //CAN°ü¸ñÊ½:

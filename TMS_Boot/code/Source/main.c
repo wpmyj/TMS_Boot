@@ -15,6 +15,7 @@
 #include "can_address.h"
 #include "TMS_Boot_ObjDict_m.h"
 #include "TMS_Boot_ObjDict_s.h"
+#include "wdg.h"
 #define BOOT_MAGIC	0X4545
 int main()
 {
@@ -33,6 +34,7 @@ int main()
 	
 
 	DEBUG_PRINT("boot...\r\n");
+	bsp_InitIwdg(1000);
 	switch(ChooseBoard)
 	{
 		case MC1_MTD_NODEID:

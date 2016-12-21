@@ -19,9 +19,11 @@ namespace TMS_CAN_UPDATE
         public delegate void CommonEventHandler(Dictionary<String,Object> ev);
         public enum EventType {
             TRANSMIT_BLK,
+            CMD_SEND_FAILED,
             PRINT,
             FILE_TRANSER_COMPLETE,
             FILE_TRANSER_FAILED,
+            SERIAL_CANNOT_USE
         };
 
         // 基于上面的委托定义事件
@@ -58,9 +60,24 @@ namespace TMS_CAN_UPDATE
         {
             ParamTimer timer  = (ParamTimer)sender;
             int timeoutCount = (int)timer.Param["TimeoutCount"];
+            if ((int)timer.Param["funcCode"] == (int)IAP_CMD.GET_SOFTWARE_VERSION)
+            {
+                Dictionary<string, object> dir = new Dictionary<string, object>();
+                dir.Add("success", false);
+                dir.Add("m_id", timer.Param["m_id"]);
+                dir.Add("s_id", timer.Param["s_id"]);
+                getDevVerHandler(dir);
+                return;
+            }
             if (++timeoutCount >= 3)//超时3次
             {
                 timeoutCount = 0;
+                Dictionary<string, object> dir = new Dictionary<string, object>();
+                dir.Add("m_id", (int)timer.Param["m_id"]);
+                dir.Add("EventType", EventType.CMD_SEND_FAILED);
+                dir.Add("s_id", (int)timer.Param["s_id"]);
+                dir.Add("funcCode", (int)timer.Param["funcCode"]);
+                CommonEvent(dir);
             }
             else {
                 int m_id = (int)timer.Param["m_id"];
@@ -86,6 +103,8 @@ namespace TMS_CAN_UPDATE
         **********************************************************/
         private void TransmitNextBlk(int dts_mNode, int dts_sNode)
         {
+            if (fileTransfer == null)
+                return;
             SendCmd(dts_mNode, dts_sNode, (int)IAP_CMD.PROGRAMING, fileTransfer.NextBlk());
             Dictionary<String, Object> dir = new Dictionary<string, object>();
             dir.Add("EventType", EventType.TRANSMIT_BLK);
@@ -150,6 +169,7 @@ namespace TMS_CAN_UPDATE
                 Dictionary<string, object> dir = new Dictionary<string, object>();
                 dir.Add("app", app);
                 dir.Add("ver", ver);
+                dir.Add("success",true);
                 dir.Add("m_id", m_id);
                 dir.Add("s_id", s_id);
                 getDevVerHandler(dir);                
@@ -175,6 +195,7 @@ namespace TMS_CAN_UPDATE
         { 
             return SerialPort.GetPortNames();
         }
+        byte[] rcv_buff = new byte[0];
         void serial_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             Byte[] buff = new Byte[serial.BytesToRead];
@@ -194,7 +215,7 @@ namespace TMS_CAN_UPDATE
                 MessageBox.Show(ex.ToString(), "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
             }
             byte[] print_buff = new byte[0];
-            byte[] rcv_buff = new byte[0];
+            
             while (buff.Length != 0)
             {
                 if (rcvState == SerialRcvState.INIT)
@@ -284,6 +305,7 @@ namespace TMS_CAN_UPDATE
                     if (buff.Length + rcv_buff.Length < 10)//匹配0xaf和0xfa但不足10字节
                     {
                         //状态不变
+                        System.Console.WriteLine("buff len : " + buff.Length + " rcv buff len:" + rcv_buff.Length);
                         Array.Resize(ref rcv_buff, rcv_buff.Length + buff.Length);
                         Buffer.BlockCopy(buff, 0, rcv_buff, rcv_buff.Length - buff.Length, buff.Length);
                         Array.Resize(ref buff, 0);
@@ -315,78 +337,19 @@ namespace TMS_CAN_UPDATE
                 Array.Resize(ref print_buff, 0);
             }
         }
-        /*
-        private void sendFile(int m_id, int s_id, String name)
+        public bool Transmit(String filePath,int m_id, int s_id)
         {
-            UInt16 crc = 0;
-            if (FileBlkCnt == 0)
+            String fileName = System.IO.Path.GetFileNameWithoutExtension(filePath);
+            String devName = XmlManager.GetDevNameFromXml(m_id,s_id);
+            String fileNamePrefix = fileName.Substring(0, devName.Length);
+            if (devName != fileNamePrefix)
             {
-                System.IO.FileStream fsRead = null;
-                try
-                {
-                    fsRead = new System.IO.FileStream(name, System.IO.FileMode.Open);
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("文件打开异常，请检查文件是否存在！", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
-                    return;
-                }
-                fileLen = fsRead.Length;
-                FileBlkCnt = (int)(fileLen) / FILE_BLK_MAX_SIZE;
-                if ((int)(fileLen) % FILE_BLK_MAX_SIZE != 0)
-                    FileBlkCnt++;
-                FileBlkOffset = 0;
-                fileBuff = new byte[fileLen + 2];
-                fsRead.Read(fileBuff, 0, (int)fileLen);
-                crc = Tools.CRC16(fileBuff, 0, (UInt32)fileLen);
-                Byte[] bytes = System.BitConverter.GetBytes(crc);
-                Buffer.BlockCopy(bytes, 0, fileBuff, (int)fileLen, 2);
-                fsRead.Close();
+                MessageBox.Show("烧写文件与设备不匹配！", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                return false;
             }
-            FileBlkOffset++;
-            progressBar1.Value = FileBlkOffset * 100 / FileBlkCnt;
-            String str = watch.Elapsed.ToString(@"ss\:fff");
-            str = String.Format("{0} File block {1:D},{2:D}\r\n", str, FileBlkOffset, FileBlkCnt);
-            textBox1.AppendText(str);
-            int fileBlkLen = FileBlkOffset < FileBlkCnt ? FILE_BLK_MAX_SIZE : (int)fileLen % FILE_BLK_MAX_SIZE;
-            byte[] buff = new byte[fileBlkLen + 6];
-            Byte[] tmp = System.BitConverter.GetBytes((UInt16)FileBlkCnt);
-            Buffer.BlockCopy(tmp, 0, buff, 0, 2);
-            tmp = System.BitConverter.GetBytes((UInt16)FileBlkOffset);
-            Buffer.BlockCopy(tmp, 0, buff, 2, 2);
-
-            try
-            {
-                Buffer.BlockCopy(fileBuff, (FileBlkOffset - 1) * FILE_BLK_MAX_SIZE, buff, 4, fileBlkLen);
-                if (FileBlkOffset == FileBlkCnt)
-                {
-                    crc = Tools.CRC16(fileBuff, 0, (UInt32)fileLen);
-                }
-                else
-                {
-                    crc = Tools.CRC16(buff, 4, (UInt32)fileBlkLen);
-                }
-                Byte[] bytes = System.BitConverter.GetBytes(crc);
-                Buffer.BlockCopy(bytes, 0, buff, (int)fileBlkLen + 4, 2);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString(), "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
-            }
-            SendCmd(m_id, s_id, (int)IAP_CMD.PROGRAMING, buff);
-            //System.Console.WriteLine("send FileBlkOffset : " + FileBlkOffset);
-            if (FileBlkOffset == FileBlkCnt)
-            {
-                FileBlkCnt = 0;
-                FileBlkOffset = 0;
-                fileLen = 0;
-            }
-        }*/
-        public void Transmit(String filePath,int m_id, int s_id)
-        {
             fileTransfer = new FileTransfer(filePath);
             Byte[] cmdVal = { 0, 0, 0, 0 };
-            SendCmd(m_id, s_id, (int)IAP_CMD.PROGRAM_READY, cmdVal);
+            return SendCmd(m_id, s_id, (int)IAP_CMD.PROGRAM_READY, cmdVal);
         }
         /*
         public void Transmit(String filePath)
@@ -427,7 +390,7 @@ namespace TMS_CAN_UPDATE
         {
             return m_id >= 1 && m_id <= 12 && s_id >= 0 && s_id <= 3;
         }
-        private void SendCmd(int mNode, int sNode, int funcCode, Byte[] cmdVal)
+        private bool SendCmd(int mNode, int sNode, int funcCode, Byte[] cmdVal)
         {
             Byte[] buff = new Byte[8 + cmdVal.Length];
             UInt16 len = (UInt16)buff.Length;
@@ -449,15 +412,19 @@ namespace TMS_CAN_UPDATE
             }
             catch (Exception)
             {
-                MessageBox.Show("串口发送异常，请确认串口已打开！", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                Dictionary<String, Object> ev = new Dictionary<String, Object>();
+                ev.Add("EventType", EventType.SERIAL_CANNOT_USE);
+                CommonEvent(ev);
+                return false;
             }
             Dictionary<String,Object> dict = new Dictionary<String,Object>();
             dict.Add("m_id",mNode);
             dict.Add("s_id",sNode);
-            dict.Add("funcCmd", funcCode);
+            dict.Add("funcCode", funcCode);
             dict.Add("cmdVal", cmdVal);
-            cmdTimeoutTimer.Start(3000, dict);
-
+            dict.Add("TimeoutCount", 0);
+            cmdTimeoutTimer.Start(4000, dict);//超时时间必须大于sdo超时等待
+            return true;
         }
         public void Close()
         {
@@ -473,17 +440,20 @@ namespace TMS_CAN_UPDATE
             catch (Exception)
             {
                 MessageBox.Show("串口打开失败，请确认串口是否存在！", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                Dictionary<String, Object> dir = new Dictionary<String, Object>();
+                dir.Add("EventType", EventType.FILE_TRANSER_FAILED);
+                CommonEvent(dir);
                 return false;
             }
             return true;
         }
-        public delegate void CommonHandler(Dictionary<string, object> devNodeDir);
+        public delegate bool CommonHandler(Dictionary<string, object> devNodeDir);
         CommonHandler getDevVerHandler = null;
-        public void GetDevVerCallback(int m_id, int s_id, CommonHandler handler)
+        public bool GetDevVerCallback(int m_id, int s_id, CommonHandler handler)
         {
-            Byte[] cmdVal = { 0, 0, 0, 0 };
-            SendCmd(m_id, s_id, (int)IAP_CMD.GET_SOFTWARE_VERSION, cmdVal);
             getDevVerHandler = handler;
+            Byte[] cmdVal = { 0, 0, 0, 0 };
+            return SendCmd(m_id, s_id, (int)IAP_CMD.GET_SOFTWARE_VERSION, cmdVal);
         }
     }
 }

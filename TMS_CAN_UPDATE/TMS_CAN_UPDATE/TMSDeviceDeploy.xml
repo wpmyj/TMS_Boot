@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <main id="1" name="MTDCCU">
-    <sub id="1" name="CCULED" />
+  <main id="1" name="MTDCCU" app="APP" ver="161213" online="y" />
+  <main id="3" name="MTDCPU" app="APP" ver="161207" online="y">
+    <sub id="2" name="MTDMFD" app="APP" ver="161214" online="y" />
   </main>
 </root>

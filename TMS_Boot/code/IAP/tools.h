@@ -14,7 +14,7 @@
                             printf("\n");
 #endif
 extern UNS16 CRC16(UNS8* puchMsg, UNS32 usDataLen);
-
+extern void delay_ms(UNS16 ms);
 #if defined(__APP__) || defined(__BOOT__)
 extern void	App_JumpFunction(uint32_t AppAddress);
 #endif

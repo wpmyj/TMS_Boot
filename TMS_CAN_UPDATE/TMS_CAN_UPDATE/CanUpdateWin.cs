@@ -16,6 +16,7 @@ namespace TMS_CAN_UPDATE
         enum WorkState
         {
             INIT,
+            GET_SOFT_VERSION_LIST,
             WAIT_PROGRAM_READY,
             PROGRAMING,
             WAIT_REBOOT,
@@ -26,19 +27,52 @@ namespace TMS_CAN_UPDATE
         {
             if (newState == WorkState.INIT)
             {
-                updateBtn.Enabled = true;
-                checkBox1.Enabled = true;
-                treeView1.Enabled = true;
-                progressBar1.Value = 0;
                 workState = newState;
+
+                comboBox1.Enabled = true;
+                serialSwitchBtn.Enabled = true;
+                treeView1.Enabled = true;
+                checkBox1.Enabled = true;
+                groupBox1.Enabled = true;
+                UpdateDevBtn.Enabled = true;
+                pathTextBox.Enabled = true;
+                updateBtn.Enabled = true;
+                browseBtn.Enabled = true;
+                DevInfoConfBtn.Enabled = true;
+
+                progressBar1.Value = 0;
                 watch.Reset();
+            }
+            else if (newState == WorkState.GET_SOFT_VERSION_LIST)
+            {
+                workState = newState;
+
+                comboBox1.Enabled = false;
+                serialSwitchBtn.Enabled = false;
+                treeView1.Enabled = false;
+                checkBox1.Enabled = false;
+                groupBox1.Enabled = false;
+                UpdateDevBtn.Enabled = false;
+                pathTextBox.Enabled = false;
+                updateBtn.Enabled = false;
+                browseBtn.Enabled = false;
+                DevInfoConfBtn.Enabled = false;
             }
             else if (newState == WorkState.PROGRAMING)
             {
-                updateBtn.Enabled = false;
-                checkBox1.Enabled = false;
-                treeView1.Enabled = false;
                 workState = newState;
+
+                comboBox1.Enabled = false;
+                serialSwitchBtn.Enabled = false;
+                treeView1.Enabled = false;
+                checkBox1.Enabled = false;
+                groupBox1.Enabled = false;
+                UpdateDevBtn.Enabled = false;
+                pathTextBox.Enabled = false;
+                updateBtn.Enabled = false;
+                browseBtn.Enabled = false;
+                DevInfoConfBtn.Enabled = false;
+                
                 watch.Reset();
                 watch.Start();
             }
@@ -68,30 +102,62 @@ namespace TMS_CAN_UPDATE
             {
                 comboBox1.SelectedIndex = 0;
             }
+            XmlManager.LoadDevOnlineFromXml(devInfoTable);
+            updateDevTreeView(devInfoTable);
         }
+
 
         void canUpdateManager_CommonEvent(Dictionary<string, object> ev)
         {
             CanUpdateManager.EventType evType = (CanUpdateManager.EventType)ev["EventType"];
-            if (evType == CanUpdateManager.EventType.PRINT)
+            
+            if (evType == CanUpdateManager.EventType.CMD_SEND_FAILED)
+            {
+                string str = "cmd send failed : m_id "+ev["m_id"]+" s_id "+ev["s_id"]+" funcCode "+ev["funcCode"];
+                textBox1.AppendText(str);
+                TransitionState(WorkState.INIT);
+            }
+            else if (evType == CanUpdateManager.EventType.FILE_TRANSER_COMPLETE)
+            {
+                if (!updateOneDevFromTreeView(pathTextBox.Text))
+                {
+                    MessageBox.Show("设备更新已完成！", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                    TransitionState(WorkState.INIT);
+                }
+                
+            }
+            else if (evType == CanUpdateManager.EventType.SERIAL_CANNOT_USE)
+            {
+                MessageBox.Show("串口发送异常，请确认串口已打开！", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                TransitionState(WorkState.INIT);
+            }
+            else if (evType == CanUpdateManager.EventType.PRINT)
             {
                 textBox1.AppendText((string)ev["STR"]);
             }
             else if (evType == CanUpdateManager.EventType.TRANSMIT_BLK)
             {
                 Dictionary<String, Object> dir = new Dictionary<string, object>();
-                progressBar1.Value = (int)ev["Count"] * 100 / (int)ev["TotalBlk"];
-                String str = watch.Elapsed.Minutes.ToString() + ":" + watch.Elapsed.Seconds.ToString() + ":" + watch.Elapsed.Milliseconds.ToString();
-                str += " offset " + ((int)ev["TotalBlk"] - (int)ev["Count"]).ToString()+" total "+ ((int)ev["Count"]).ToString();
+                int offset = (int)ev["TotalBlk"] - (int)ev["Count"];
+                progressBar1.Value = offset * 100 / (int)ev["TotalBlk"];
+                String str = watch.Elapsed.Minutes.ToString("00") + ":" + watch.Elapsed.Seconds.ToString("00") + ":" + watch.Elapsed.Milliseconds.ToString("000");
+                str += " offset " + offset.ToString() + " total " + ((int)ev["TotalBlk"]).ToString()+"\n";
                 textBox1.AppendText(str);
             }
             else if (evType == CanUpdateManager.EventType.FILE_TRANSER_COMPLETE)
             {
                 if (checkBox1.Checked == true)//文件传输完成，传输下一个设备
+                {
                     if (!updateOneDevFromTreeView(pathTextBox.Text))//没有下一个设备
                     {
                         TransitionState(WorkState.INIT);
                     }
+                }
+                else
+                {
+                    TransitionState(WorkState.INIT);
+                }
+                    
             }
             else if (evType == CanUpdateManager.EventType.FILE_TRANSER_FAILED)
             {
@@ -115,7 +181,6 @@ namespace TMS_CAN_UPDATE
             }
             if (canUpdateManager.Open(comboBox1.Text))
             {
-                UpdateDevBtn_Click(null, null);
                 serialSwitchBtn.Text = "关闭";
             }
                 
@@ -127,9 +192,8 @@ namespace TMS_CAN_UPDATE
                 int m_id = int.Parse(treeView1.Nodes[i].Text.Split(' ')[0]);
                 if (treeView1.Nodes[i].Checked == true)
                 {
-                    canUpdateManager.Transmit(filePath, m_id, 0);
                     treeView1.Nodes[i].Checked = false;
-                    return true;
+                    return canUpdateManager.Transmit(filePath, m_id, 0);
                 }
                 else
                 {
@@ -138,9 +202,8 @@ namespace TMS_CAN_UPDATE
                         if (treeView1.Nodes[i].Nodes[j].Checked == true)
                         {
                             int s_id = int.Parse(treeView1.Nodes[i].Nodes[j].Text.Split(' ')[0]);
-                            canUpdateManager.Transmit(filePath, m_id, s_id);
                             treeView1.Nodes[i].Nodes[j].Checked = false;
-                            return true;
+                            return canUpdateManager.Transmit(filePath, m_id, s_id);
                         }
                     }
                 }
@@ -165,8 +228,8 @@ namespace TMS_CAN_UPDATE
                     MessageBox.Show("请输入有效的主设备ID和自设备ID!", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
                     return;
                 }
-                canUpdateManager.Transmit(pathTextBox.Text, m_id, s_id);
-                TransitionState(WorkState.PROGRAMING);
+                if(canUpdateManager.Transmit(pathTextBox.Text, m_id, s_id))
+                    TransitionState(WorkState.PROGRAMING);
             }
             else 
             {
@@ -228,7 +291,8 @@ namespace TMS_CAN_UPDATE
                 for (int j = 0; j < devInfoTable.GetLength(1); j++)
                     devInfoTable[i, j] = null;
             devDepTable = XmlManager.GetDevDevployFromXml();
-            gerDevVerHandler(null);
+            if(gerDevVerHandler(null))
+                TransitionState(WorkState.GET_SOFT_VERSION_LIST);
         }
         void updateDevTreeView(Dictionary<string, object>[,] devInfoTable)
         {
@@ -253,7 +317,8 @@ namespace TMS_CAN_UPDATE
                 }
             }
         }
-        private void gerDevVerHandler(Dictionary<string, object> devNodeDir)//获得设备版本
+        public delegate void UpdateDevTreeView(Dictionary<string, object>[,] devNodeDir);
+        private bool gerDevVerHandler(Dictionary<string, object> devNodeDir)//获得设备版本
         {
             int m_id = 0, s_id = 0;
             int next_m_id = 0, next_s_id = 0;
@@ -261,21 +326,26 @@ namespace TMS_CAN_UPDATE
             {
                 m_id = (int)devNodeDir["m_id"];
                 s_id = (int)devNodeDir["s_id"];
-                devInfoTable[m_id, s_id] = devNodeDir;
-                updateDevTreeView(devInfoTable);
+                if ((bool)devNodeDir["success"] == true)
+                {
+                    devInfoTable[m_id, s_id] = devNodeDir;
+                    this.Invoke(new UpdateDevTreeView(updateDevTreeView), devInfoTable);
+                } 
             }
             for (int i = m_id; i < devDepTable.GetLength(0); i++)
-                for (int j = s_id + 1; j < devDepTable.GetLength(1); j++)
+                for (int j = (i == m_id ? s_id+1:0); j < devDepTable.GetLength(1); j++)
                 {
-                    if (devDepTable[i, j] != null)
+                    if (devDepTable[i, j] != null )
                     {
                         next_m_id = i;
                         next_s_id = j;
-                        this.canUpdateManager.GetDevVerCallback(next_m_id, next_s_id, gerDevVerHandler);
-                        i = devDepTable.GetLength(0);
-                        break;
+                        textBox1.AppendText("获取版本信息 m_id:" + next_m_id + " s_id:" + next_s_id + "\n");
+                        return this.canUpdateManager.GetDevVerCallback(next_m_id, next_s_id, gerDevVerHandler);
                     }
                 }
+            TransitionState(WorkState.INIT);//没有下一个版本信息
+            XmlManager.SaveDevOnlineToXml(devInfoTable);
+            return false;
             
         }
     }

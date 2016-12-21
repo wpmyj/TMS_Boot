@@ -56,6 +56,17 @@ static const unsigned char auchCRCLo[]={
 0x44, 0x84, 0x85, 0x45, 0x87, 0x47, 0x46, 0x86, 0x82, 0x42,
 0x43, 0x83, 0x41, 0x81, 0x80, 0x40
 };
+void delay_callback(CO_Data* d,UNS32 f)
+{
+	*(UNS32*)f = 0;
+}
+
+void delay_ms(UNS16 nms)
+{
+	static UNS32 f = 1;
+	SetAlarm(NULL,(uint32_t)&f,delay_callback,MS_TO_TIMEVAL(nms),0);
+	while(f);
+}
 
 UNS16 CRC16(UNS8* puchMsg, UNS32 usDataLen)
 {
@@ -77,7 +88,7 @@ void	App_JumpFunction(uint32_t AppAddress)
 	void (*Jump_To_Application)(void);
   uint32_t JumpAddress;
 	/* Test if user code is programmed starting from address "APPLICATION_ADDRESS" */
-	if (((*(__IO uint32_t*)AppAddress) & 0x2FFE0000 ) == 0x20000000)
+	if ((((*(__IO uint32_t*)AppAddress) & 0x2FFE0000 ) == 0x20000000) || (((*(__IO uint32_t*)AppAddress) & 0x1FFF0000 ) == 0x10000000))
 	{ 
 		/* Jump to user application */
 		JumpAddress = *(__IO uint32_t*) (AppAddress + 4);
@@ -219,3 +230,4 @@ uint32_t GetSector(uint32_t Address)
     return sector;
 }
 #endif
+

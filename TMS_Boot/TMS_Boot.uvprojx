@@ -629,6 +629,11 @@
               <FileType>1</FileType>
               <FilePath>.\code\UserLib\flash_if.c</FilePath>
             </File>
+            <File>
+              <FileName>wdg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\code\UserLib\wdg.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

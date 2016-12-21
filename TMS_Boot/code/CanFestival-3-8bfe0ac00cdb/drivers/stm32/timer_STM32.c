@@ -127,8 +127,10 @@ void initTimer(void)
   * @param  NONE
   * @retval NONE
   */
+#include "wdg.h"
 void TIM4_IRQHandler(void)
 {
+	IWDG_Feed();
 	if (TIM_GetITStatus(TIM4, TIM_IT_CC1) != RESET)
 	{
 		  //my_printf("led : 0x%x \r\n",led2_get_state());

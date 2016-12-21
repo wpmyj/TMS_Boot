@@ -74,6 +74,15 @@ namespace TMS_CAN_UPDATE
                 attr = xmlDoc.CreateAttribute("name",null);
                 attr.Value = strs[1];
                 node.Attributes.Append(attr);
+                attr = xmlDoc.CreateAttribute("app", null);
+                attr.Value = "----";
+                node.Attributes.Append(attr);
+                attr = xmlDoc.CreateAttribute("ver", null);
+                attr.Value = "----";
+                node.Attributes.Append(attr);
+                attr = xmlDoc.CreateAttribute("online", null);
+                attr.Value = "n";
+                node.Attributes.Append(attr);
                 root.AppendChild(node);
                 for(int j=0;j<treeView1.Nodes[i].Nodes.Count;j++)
                 {
@@ -84,6 +93,15 @@ namespace TMS_CAN_UPDATE
                     s_node.Attributes.Append(attr);
                     attr = xmlDoc.CreateAttribute("name", null);
                     attr.Value = strs[1];
+                    s_node.Attributes.Append(attr);
+                    attr = xmlDoc.CreateAttribute("app", null);
+                    attr.Value = "----"; ;
+                    s_node.Attributes.Append(attr);
+                    attr = xmlDoc.CreateAttribute("ver", null);
+                    attr.Value = "----"; ;
+                    s_node.Attributes.Append(attr);
+                    attr = xmlDoc.CreateAttribute("online", null);
+                    attr.Value = "n";
                     s_node.Attributes.Append(attr);
                     node.AppendChild(s_node);
                 }
@@ -115,7 +133,8 @@ namespace TMS_CAN_UPDATE
             if (treeView1.Nodes.Count == 0)
                 index = 0;
             index = treeView1.Nodes.IndexOf(treeView1.SelectedNode);
-            if (index == -1)
+
+            if (index == -1 && treeView1.Nodes.Count > 0)
             {
                 MessageBox.Show("请选择一个主设备", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
                 return;
@@ -139,7 +158,8 @@ namespace TMS_CAN_UPDATE
                 MessageBox.Show("请选择一个主设备", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
                 return;
             }
-            paraTo = treeView1.SelectedNode.Name;
+            //paraTo = treeView1.SelectedNode.Name;
+            paraTo = null;
             new AddDevWin().ShowDialog(this);
             if (paraTo != null)
             {

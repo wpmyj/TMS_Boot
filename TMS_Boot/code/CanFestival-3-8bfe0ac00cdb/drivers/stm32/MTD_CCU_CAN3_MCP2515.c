@@ -152,22 +152,13 @@ unsigned char MTDCCU_CAN3_MCP2515_Init(const unsigned int CanBaudRate)
 	
 	return res;
 }	
-void delay_callback(CO_Data* d,UNS32 f)
-{
-	*(UNS32*)f = 0;
-}
 
-void delay_ms(u16 nms)
-{
-	static UNS32 f = 1;
-	SetAlarm(IAP_info.mCo_data,(uint32_t)&f,delay_callback,MS_TO_TIMEVAL(nms),0);
-	while(f);
-}
 /** 
   * @brief  Reset the MCP2515 then U go into the configruation mode 
   * @param  none 
   * @retval none 
   */ 
+#include "tools.h"
 void MTDCCU_CAN3_MCP2515_Reset(void)	     //MCP2515器件复位
 {
    MTDCCU_SPI1_CS_LOW();										/* 片选口线置低选中  */
